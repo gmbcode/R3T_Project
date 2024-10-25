@@ -1,4 +1,7 @@
 /T1/.env
 /.idea/
-.idea
 /.venv
+/T1/t1app.log
+/T1/testenv.bat
+/T1/token.json
+/T1/credentials.json
