@@ -93,7 +93,9 @@ class T_Mail_App(App):
             self.rows += resp_rows
             logger.info(str(self.rows))
             logger.info(str(self.id_lst))
-            self.table.add_rows(resp_rows)
+            for singular_row in resp_rows:
+                to_add = singular_row[:2]
+                self.table.add_row(*to_add,label=singular_row[2])
             self.query_one(ProgressBar).advance(l_interval)
             await asyncio.sleep(0.2)
             rows_loaded += l_interval

@@ -73,7 +73,7 @@ def load_rows(pgt="", l_interval=5) -> tuple:
         else:
             logger.info(f"Message {id_1} is read ")
 
-        rows.append((text_sanitizer(G_msg.getFrom()), G_msg.getHeading() + post_add))
+        rows.append((text_sanitizer(G_msg.getFrom()), G_msg.getHeading() + post_add,G_msg.getDate()))
     return (rows, id_lst), pgt
 
 

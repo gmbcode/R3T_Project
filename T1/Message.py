@@ -2,8 +2,7 @@
 import GmailFetcher
 import base64
 from bs4 import BeautifulSoup
-
-
+import dateutil.parser as parser
 class Gmail_Message:
     def __init__(self, id: str, srv: GmailFetcher.GmailService):
         self.MessageId = id
@@ -62,7 +61,17 @@ class Gmail_Message:
         for field in headers:
             if field['name'] == 'From':
                 return field['value']
-
+    def getDate(self) -> str:
+        """Returns details about the sender of the message
+           :rtype: str
+           :return: The sender of the message
+        """
+        payload = self.Message['payload']
+        headers = payload['headers']
+        for field in headers:
+            if field['name'] == 'Date':
+                d_obj = parser.parse(field['value'])
+                return str(d_obj.date())
     def markasRead(self) -> None:
         """Marks the message as read
            :rtype: None
