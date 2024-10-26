@@ -2,17 +2,20 @@
 import GmailFetcher
 import base64
 from bs4 import BeautifulSoup
+
+
 class Gmail_Message:
-    def __init__(self,id :str,srv : GmailFetcher.GmailService):
+    def __init__(self, id: str, srv: GmailFetcher.GmailService):
         self.MessageId = id
         self.srv = srv
         self.full_message_loaded = False
-        self.Message = self.srv.service.users().messages().get(userId='me', id=id,format='metadata').execute()
+        self.Message = self.srv.service.users().messages().get(userId='me', id=id, format='metadata').execute()
         self.labels = self.Message['labelIds']
         if 'UNREAD' in self.labels:
             self.unread = True
         else:
             self.unread = False
+
     def getBody(self) -> str:
         """Returns the body of the message
            :rtype: str
@@ -36,9 +39,8 @@ class Gmail_Message:
         else:
             body_data = base64.urlsafe_b64decode(payload['body']['data']).decode('utf-8')
 
-
-
         return body_data
+
     def getHeading(self) -> str:
         """Returns the subject of the message
            :rtype: str
@@ -49,6 +51,7 @@ class Gmail_Message:
         for field in headers:
             if field['name'] == 'Subject':
                 return field['value']
+
     def getFrom(self) -> str:
         """Returns details about the sender of the message
            :rtype: str
@@ -59,28 +62,54 @@ class Gmail_Message:
         for field in headers:
             if field['name'] == 'From':
                 return field['value']
+
     def markasRead(self) -> None:
         """Marks the message as read
            :rtype: None
            :return: None
         """
-        self.srv.service.users().messages().modify(userId='me', id=self.MessageId,body={'removeLabelIds': ['UNREAD']}).execute()
+        self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
+                                                   body={'removeLabelIds': ['UNREAD']}).execute()
+
     def markasUnRead(self) -> None:
         """Marks the message as unread
            :rtype: None
            :return: None
         """
-        self.srv.service.users().messages().modify(userId='me', id=self.MessageId,body={'addLabelIds': ['UNREAD']}).execute()
+        self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
+                                                   body={'addLabelIds': ['UNREAD']}).execute()
+    def getMarkAsUnReadQuery(self) -> None:
+        """Marks the message as unread
+           :rtype: None
+           :return: Returns the mark as unread query
+        """
+        return self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
+                                                   body={'addLabelIds': ['UNREAD']})
+    def getMarkAsReadQuery(self) -> None:
+        """Marks the message as unread
+           :rtype: None
+           :return: Returns the mark as read query
+        """
+        return self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
+                                                   body={'removeLabelIds': ['UNREAD']})
     def moveToTrash(self) -> None:
         """Moves the message to trash
            :rtype: None
            :return: None
         """
         self.srv.service.users().messages().trash(userId='me', id=self.MessageId).execute()
+
+    def getMoveToTrashQuery(self):
+        """Moves the message to trash
+           :rtype: None
+           :return: Returns the move to trash query
+        """
+        return self.srv.service.users().messages().trash(userId='me', id=self.MessageId)
     def markAsSpam(self) -> None:
         """Moves the message to spam
            :rtype: None
            :return: None
         """
-        self.srv.service.users().messages().modify(userId='me', id=self.MessageId,body={'addLabelIds': ['SPAM'],'removeLabelIds': ['INBOX']}).execute()
-
+        self.srv.service.users().messages().modify(userId='me', id=self.MessageId, body={'addLabelIds': ['SPAM'],
+                                                                                         'removeLabelIds': [
+                                                                                             'INBOX']}).execute()
