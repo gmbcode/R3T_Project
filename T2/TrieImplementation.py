@@ -21,7 +21,8 @@ class TrieNode:
 
 
 def get_index(ch: str) -> int:
-    """Returns usable index
+    """
+    Returns usable index
     :param ch: The character to get the Index of
     :return: The Index of the character
     :rtype: int
