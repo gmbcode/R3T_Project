@@ -1,19 +1,18 @@
 import logging
 from datetime import datetime
-
 from rich.markdown import Markdown
-from textual.app import App, ComposeResult
+from textual.app import App, ComposeResult,SystemCommand
 from textual.containers import Grid, ScrollableContainer, Center, Middle, Horizontal
 from textual.widgets import Header, Footer, DataTable, Label, Button, Static, ProgressBar, Markdown
 from textual.binding import Binding
-from textual.screen import ModalScreen
+from textual.color import Gradient
+from textual.screen import ModalScreen,Screen
 from textual.coordinate import Coordinate
 from rich.text import Text
 import Message
 import GmailFetcher
 import google.generativeai as genai
 from dotenv import dotenv_values
-
 config = dotenv_values(".env")
 api_key = config['GEMINI_API_KEY']
 genai.configure(api_key=api_key)
@@ -196,3 +195,8 @@ class View_Body(ModalScreen):
         :rtype: None
         """
         self.app.pop_screen()
+class Search_Query_Selector(ModalScreen):
+    def __init__(self):
+        super().__init__()
+    def compose(self) -> ComposeResult:
+        yield ScrollableContainer()

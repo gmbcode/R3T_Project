@@ -19,7 +19,7 @@ cd T1
 `pip install -r requirements.txt`
 
 3. Go to Google Cloud Console and create a new project
-4. Enable Gmail API and go to OAuth Consent Screen and setup your app name and other parameters as required
+4. Enable Gmail API and go to OAuth Consent Screen and set up your app name and other parameters as required
 5. In the required scopes add the scope `https://mail.google.com/`
 6. Download the credentials and store them in a file named `credentials.json` in the T1 directory
 7. Go to Google AI Studio and get Gemini API key

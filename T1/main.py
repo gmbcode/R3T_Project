@@ -3,8 +3,7 @@
 # Todo : Make a create Label Modal Screen
 
 import os
-from cProfile import label
-from typing import List, Tuple
+from typing import Iterable
 from textual.containers import HorizontalScroll
 from textual.widgets import SelectionList
 
@@ -18,11 +17,13 @@ if not skip_size_checks:
     length = os.get_terminal_size().lines
     # Check terminal size
     if width <= 120 or length <= 30:
-        print("Please resize terminal to at least 120cols x 30 lines to continue")
+        print("Please resize terminal to at least 120cols x 30 lines  and restart terminal to continue")
         os.system("pause")
+        quit(0)
 
 
 class T_Mail_App(App):
+    CSS_PATH = 'main.tcss'
     BINDINGS = [
         Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", show=True),
         Binding("v", "view_mail", "View Mail", show=True),
@@ -50,11 +51,36 @@ class T_Mail_App(App):
         :return: ComposeResult Object
         :rtype: ComposeResult
         """
+        gradient = Gradient.from_colors(
+            "#881177",
+            "#aa3355",
+            "#cc6666",
+            "#ee9944",
+            "#eedd00",
+            "#99dd55",
+            "#44dd88",
+            "#22ccbb",
+            "#00bbcc",
+            "#0099cc",
+            "#3366bb",
+            "#663399",
+        )
         yield Header()
-        yield ProgressBar()
+        yield ProgressBar(gradient=gradient)
         yield DataTable()
         yield Label(id="footer_label")
         yield Footer()
+
+    def get_system_commands(self, screen: Screen) -> Iterable[SystemCommand]:
+        yield from super().get_system_commands(screen)
+        yield SystemCommand("View Mail (v)", "View the currently selected mail", self.action_view_mail)
+        yield SystemCommand("Toggle Read/Unread (Ctrl+t)", "Toggle Read/Unread on currently selected / marked mails.",
+                            self.action_toggle_read_unread)
+        yield SystemCommand("Mark for batch action (m)", "Marks the selected mail for batch action",
+                            self.action_mark_for_batch_action)
+        yield SystemCommand("Move to trash (Ctrl+x)", "Moves the selected mails to trash", self.action_move_to_trash)
+        yield SystemCommand("Report as spam (Ctrl+l)", "Reports the selected mails as spam", self.action_report_as_spam)
+        yield SystemCommand("Reload app (Ctrl+r)", "Reload the app", self.action_initiate_reload)
 
     def action_toggle_dark(self) -> None:
         """
@@ -105,7 +131,7 @@ class T_Mail_App(App):
             logger.info(str(self.id_lst))
             for singular_row in resp_rows:
                 to_add = singular_row[:2]
-                self.table.add_row(*to_add,label=singular_row[2])
+                self.table.add_row(*to_add, label=singular_row[2])
             self.query_one(ProgressBar).advance(l_interval)
             await asyncio.sleep(0.2)
             rows_loaded += l_interval
