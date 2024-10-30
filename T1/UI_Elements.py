@@ -47,6 +47,12 @@ def text_sanitizer(text: str) -> str:
 
 
 def load_rows(pgt="", l_interval=5) -> tuple:
+    """
+    Return a tuple of row data to be loaded into the UI
+    :param pgt: Next page token to load new rows
+    :rtype : tuple
+    :return : A tuple containing row data to be loaded into the UI
+    """
     rows = []
     id_lst = []
     if len(pgt) > 1:
@@ -127,14 +133,16 @@ class View_Body_Summary(ModalScreen):
         yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Close the view on pressing close button
-           :return: None
-           :rtype: None
+        """
+        Close the view on pressing close button
+        :return: None
+        :rtype: None
         """
         self.app.pop_screen()
 
     def action_close_view(self) -> None:
-        """Close the view on appropriate action
+        """
+        Close the view on appropriate action
         :return: None
         :rtype: None
         """
@@ -142,6 +150,7 @@ class View_Body_Summary(ModalScreen):
 
 
 class View_Body(ModalScreen):
+    """Custom Screen to view Body of email along with options to view email summary"""
     BINDINGS = [
         Binding("c", "close_view", "Close", show=True, priority=True),
         Binding("s", "summarize_text", "Summarize text", show=True)]
@@ -164,22 +173,25 @@ class View_Body(ModalScreen):
         yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Close the view on pressing close button
-           :return: None
-           :rtype: None
+        """
+        Close the view on pressing close button
+        :return: None
+        :rtype: None
         """
         self.app.pop_screen()
 
     def action_summarize_text(self) -> None:
-        """Generate a summary of the email body
-                   :return: None
-                   :rtype: None
+        """
+        Generate a summary of the email body
+        :return: None
+        :rtype: None
         """
         logger.info("Pushed Summary Screen")
         self.app.push_screen(View_Body_Summary(self.m_id, self.frm, self.hdg, get_summary(self.body)))
 
     def action_close_view(self) -> None:
-        """Close the view on appropriate action
+        """
+        Close the view on appropriate action
         :return: None
         :rtype: None
         """

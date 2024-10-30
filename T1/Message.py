@@ -16,9 +16,10 @@ class Gmail_Message:
             self.unread = False
 
     def getBody(self) -> str:
-        """Returns the body of the message
-           :rtype: str
-           :return: The body of the message
+        """
+        Returns the body of the message
+        :rtype: str
+        :return: The body of the message
         """
         if not self.full_message_loaded:
             self.Message = self.srv.service.users().messages().get(userId='me', id=self.MessageId).execute()
@@ -41,9 +42,10 @@ class Gmail_Message:
         return body_data
 
     def getHeading(self) -> str:
-        """Returns the subject of the message
-           :rtype: str
-           :return: The subject of the message
+        """
+        Returns the subject of the message
+        :rtype: str
+        :return: The subject of the message
         """
         payload = self.Message['payload']
         headers = payload['headers']
@@ -52,9 +54,10 @@ class Gmail_Message:
                 return field['value']
 
     def getFrom(self) -> str:
-        """Returns details about the sender of the message
-           :rtype: str
-           :return: The sender of the message
+        """
+        Returns details about the sender of the message
+        :rtype: str
+        :return: The sender of the message
         """
         payload = self.Message['payload']
         headers = payload['headers']
@@ -62,9 +65,10 @@ class Gmail_Message:
             if field['name'] == 'From':
                 return field['value']
     def getDate(self) -> str:
-        """Returns details about the sender of the message
-           :rtype: str
-           :return: The sender of the message
+        """
+        Returns details about the sender of the message
+        :rtype: str
+        :return: The sender of the message
         """
         payload = self.Message['payload']
         headers = payload['headers']
@@ -73,51 +77,58 @@ class Gmail_Message:
                 d_obj = parser.parse(field['value'])
                 return str(d_obj.date())
     def markasRead(self) -> None:
-        """Marks the message as read
-           :rtype: None
-           :return: None
+        """
+        Marks the message as read
+        :rtype: None
+        :return: None
         """
         self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
                                                    body={'removeLabelIds': ['UNREAD']}).execute()
 
     def markasUnRead(self) -> None:
-        """Marks the message as unread
-           :rtype: None
-           :return: None
+        """
+        Marks the message as unread
+        :rtype: None
+        :return: None
         """
         self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
                                                    body={'addLabelIds': ['UNREAD']}).execute()
     def getMarkAsUnReadQuery(self) -> None:
-        """Marks the message as unread
-           :rtype: None
-           :return: Returns the mark as unread query
+        """
+        Marks the message as unread
+        :rtype: None
+        :return: Returns the mark as unread query
         """
         return self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
                                                    body={'addLabelIds': ['UNREAD']})
     def getMarkAsReadQuery(self) -> None:
-        """Marks the message as unread
-           :rtype: None
-           :return: Returns the mark as read query
+        """
+        Marks the message as unread
+        :rtype: None
+        :return: Returns the mark as read query
         """
         return self.srv.service.users().messages().modify(userId='me', id=self.MessageId,
                                                    body={'removeLabelIds': ['UNREAD']})
     def moveToTrash(self) -> None:
-        """Moves the message to trash
-           :rtype: None
-           :return: None
+        """
+        Moves the message to trash
+        :rtype: None
+        :return: None
         """
         self.srv.service.users().messages().trash(userId='me', id=self.MessageId).execute()
 
     def getMoveToTrashQuery(self):
-        """Moves the message to trash
-           :rtype: None
-           :return: Returns the move to trash query
+        """
+        Moves the message to trash
+        :rtype: None
+        :return: Returns the move to trash query
         """
         return self.srv.service.users().messages().trash(userId='me', id=self.MessageId)
     def markAsSpam(self) -> None:
-        """Moves the message to spam
-           :rtype: None
-           :return: None
+        """
+        Moves the message to spam
+        :rtype: None
+        :return: None
         """
         self.srv.service.users().messages().modify(userId='me', id=self.MessageId, body={'addLabelIds': ['SPAM'],
                                                                                          'removeLabelIds': [

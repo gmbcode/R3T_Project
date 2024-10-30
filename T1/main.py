@@ -45,7 +45,8 @@ class T_Mail_App(App):
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        """Create child widgets for the app.
+        """
+        Create child widgets for the app.
         :return: ComposeResult Object
         :rtype: ComposeResult
         """
@@ -56,14 +57,16 @@ class T_Mail_App(App):
         yield Footer()
 
     def action_toggle_dark(self) -> None:
-        """Toggles Dark Mode
+        """
+        Toggles Dark Mode
         :return: None
         :rtype: None
         """
         self.dark = not self.dark
 
     def on_mount(self) -> None:
-        """On Mount Handler
+        """
+        On Mount Handler
         :return: None
         :rtype: None
         """
@@ -74,7 +77,14 @@ class T_Mail_App(App):
         lb.styles.dock = "top"
         self.set_timer(0.5, self.load_rows)
 
-    async def load_rows(self, r_max=50, l_interval=10):
+    async def load_rows(self, r_max=50, l_interval=10) -> None:
+        """
+        Loads rows of emails into the UI
+        :param r_max: Maximum number of rows to load
+        :param l_interval: Number of rows to load in one go
+        :return: None
+        :rtype: None
+        """
         rows_loaded = 0
         pgt = "start"
         self.rows = []
@@ -99,10 +109,12 @@ class T_Mail_App(App):
             self.query_one(ProgressBar).advance(l_interval)
             await asyncio.sleep(0.2)
             rows_loaded += l_interval
+        logger.info(f"Total rows loaded {len(self.rows)}")
         await self.query_one(ProgressBar).remove()
 
     def on_data_table_cell_highlighted(self, event: DataTable.CellHighlighted) -> None:
-        """Set the current highlighted cell
+        """
+        Set the current highlighted cell
         :param event: DataTable.CellHighlighted: Event when the DataTable cell is highlighted
         :return: None
         :rtype: None
@@ -112,9 +124,10 @@ class T_Mail_App(App):
         self.cur_co_ord = event.coordinate
 
     def action_initiate_reload(self) -> None:
-        """Reload all emails
-           :return: None
-           :rtype: None
+        """
+        Reload all emails
+        :return: None
+        :rtype: None
         """
         dt = self.query_one(DataTable)
         dt.clear()
@@ -123,14 +136,16 @@ class T_Mail_App(App):
         self.set_timer(0.5, self.load_rows)
 
     def action_request_quit(self) -> None:
-        """Confirm if user wants to quit
+        """
+        Confirm if user wants to quit
         :return: None
         :rtype: None
         """
         self.push_screen(Quit_Check())
 
     def action_view_mail(self) -> None:
-        """View a particular mail
+        """
+        View a particular mail
         :return: None
         :rtype: None
         """
@@ -140,9 +155,10 @@ class T_Mail_App(App):
                       Message.Gmail_Message(self.id_lst[self.cur_row], srv).getBody()))
 
     def action_toggle_read_unread(self) -> None:
-        """Toggle if a message is read or unread
-           :return: None
-           :rtype: None
+        """
+        Toggle if a message is read or unread
+        :return: None
+        :rtype: None
         """
         logger.info("Initiated toggle r/ur action ")
         dt = self.query_one(DataTable)
@@ -191,9 +207,10 @@ class T_Mail_App(App):
         logger.info("Successfully finished toggle r/ur action ")
 
     def action_move_to_trash(self) -> None:
-        """Moves the selected message/messages to trash
-           :return: None
-           :rtype: None
+        """
+        Moves the selected message/messages to trash
+        :return: None
+        :rtype: None
         """
         logger.info("Initiated trash mail action ")
         dt = self.query_one(DataTable)
@@ -234,9 +251,10 @@ class T_Mail_App(App):
         logger.info("Successfully finished trash mail action ")
 
     def action_report_as_spam(self) -> None:
-        """Moves the selected message to trash
-           :return: None
-           :rtype: None
+        """
+        Moves the selected message to trash
+        :return: None
+        :rtype: None
         """
         logger.info("Initiated report mail as spam action ")
         dt = self.query_one(DataTable)
@@ -277,7 +295,12 @@ class T_Mail_App(App):
 
         logger.info("Successfully finished report mail as spam action ")
 
-    def action_mark_for_batch_action(self):
+    def action_mark_for_batch_action(self) -> None:
+        """
+        Mark the current email for further batch commands
+        :return: None
+        :rtype: None
+        """
         dt = self.query_one(DataTable)
         sbj = dt.get_cell_at(Coordinate(self.cur_row, 0))
         if sbj[:5] == '[red]' and sbj[-6:] == '[/red]':
