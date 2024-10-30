@@ -1,10 +1,11 @@
+"""Custom Trie Node implementation along with relevant functions"""
 from collections import deque
 
 
 class TrieNode:
     """Custom Trie Node implementation"""
 
-    def __init__(self, w_up="",level=0):
+    def __init__(self, w_up="", level=0):
         """
         Trie Node Implementation with levels and words
         :param w_up: Word formed from the root node up till the current node
@@ -46,7 +47,7 @@ def insert_key(root: TrieNode, key: str) -> None:
         w_up += ch
         index = get_index(ch)
         if curr.child[index] is None:
-            new_node = TrieNode(w_up,level)
+            new_node = TrieNode(w_up, level)
             curr.child[index] = new_node
         curr = curr.child[index]
     curr.word_end = True
@@ -67,6 +68,7 @@ def search_key(root: TrieNode, key: str) -> bool:
         else:
             curr = curr.child[get_index(ch)]
     return curr.word_end
+
 
 def load_root(path: str) -> TrieNode:
     """
@@ -120,4 +122,3 @@ def custom_search(root: TrieNode, key_spec: str) -> list:
                 index += 1
 
     return words
-
