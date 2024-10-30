@@ -176,9 +176,11 @@ class T_Mail_App(App):
         :rtype: None
         """
         logger.info(self.id_lst[self.cur_row])
+        msg = Message.Gmail_Message(self.id_lst[self.cur_row], srv)
+        body = msg.getBody()
         self.push_screen(
             View_Body(self.id_lst[self.cur_row], self.rows[self.cur_row][0], self.rows[self.cur_row][1],
-                      Message.Gmail_Message(self.id_lst[self.cur_row], srv).getBody()))
+                      body,msg))
 
     def action_toggle_read_unread(self) -> None:
         """
