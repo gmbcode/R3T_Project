@@ -1,8 +1,14 @@
 """TMail Message Library"""
 import GmailFetcher
 import base64
-from bs4 import BeautifulSoup
 import dateutil.parser as parser
+import logging
+from datetime import datetime
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='msg.log', encoding='utf-8', level=logging.DEBUG)
+logger.info(" App started at " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+
+
 class Gmail_Message:
     def __init__(self, id: str, srv: GmailFetcher.GmailService):
         self.MessageId = id
@@ -50,12 +56,17 @@ class Gmail_Message:
             self.Message = self.srv.service.users().messages().get(userId='me', id=self.MessageId).execute()
             self.full_message_loaded = True
         payload = self.Message['payload']
+        to_return = False
         if 'parts' in payload:
             for part in payload['parts']:
                 if 'filename' in part:
-                    return True
+                    if len(part['filename']) > 0:
+                        to_return = True
+                    else:
+                        pass
                 else:
-                    return False
+                    pass
+        return to_return
     def downloadAttachments(self) -> None:
         """
         Download the attachments if they exist
