@@ -32,7 +32,8 @@ class T_Mail_App(App):
         Binding("ctrl+c", "request_quit", "Quit", show=True, priority=True),
         Binding("ctrl+l", "report_as_spam", "Report message as spam", show=True),
         Binding("m", "mark_for_batch_action", "Mark email", show=True),
-        Binding("ctrl+r", "initiate_reload", "Reload emails")
+        Binding("ctrl+r", "initiate_reload", "Reload emails"),
+        Binding("ctrl+s", "initiate_search", "Search for emails", show=True)
     ]
 
     def __init__(self):
@@ -80,6 +81,7 @@ class T_Mail_App(App):
                             self.action_mark_for_batch_action)
         yield SystemCommand("Move to trash (Ctrl+x)", "Moves the selected mails to trash", self.action_move_to_trash)
         yield SystemCommand("Report as spam (Ctrl+l)", "Reports the selected mails as spam", self.action_report_as_spam)
+        yield SystemCommand("Search (Ctrl+s)", "Search for emails", self.action_initiate_search)
         yield SystemCommand("Reload app (Ctrl+r)", "Reload the app", self.action_initiate_reload)
 
     def action_toggle_dark(self) -> None:
@@ -117,10 +119,51 @@ class T_Mail_App(App):
         self.table.add_columns('From', 'Subject')
         while rows_loaded < r_max and len(pgt) > 1:
             if pgt == "start":
-                self.lresp = load_rows()
+                self.lresp = load_rows(l_interval=l_interval)
                 self.id_lst = self.lresp[0][1]
             else:
                 self.lresp = load_rows(pgt=pgt, l_interval=l_interval)
+            resp_rows = self.lresp[0][0]
+            resp_id_lst = self.lresp[0][1]
+            if pgt != "start":
+                self.id_lst += resp_id_lst
+            pgt = self.lresp[1]
+            self.rows += resp_rows
+            logger.info(str(self.rows))
+            logger.info(str(self.id_lst))
+            for singular_row in resp_rows:
+                to_add = singular_row[:2]
+                self.table.add_row(*to_add, label=singular_row[2])
+            self.query_one(ProgressBar).advance(l_interval)
+            await asyncio.sleep(0.2)
+            rows_loaded += l_interval
+        logger.info(f"Total rows loaded {len(self.rows)}")
+        await self.query_one(ProgressBar).remove()
+
+    async def load_rows_sq(self, search_query, r_max=10, l_interval=1) -> None:
+        """
+        Loads rows of emails into the UI
+        :param r_max: Maximum number of rows to load
+        :param l_interval: Number of rows to load in one go
+        :return: None
+        :rtype: None
+        """
+        rows_loaded = 0
+        pgt = "start"
+        self.rows = []
+        self.table.add_columns('From', 'Subject')
+        while rows_loaded < r_max and len(pgt) > 1:
+            if pgt == "start":
+                self.lresp = load_rows_sq(search_query, l_interval=l_interval)
+                if self.lresp is None:
+                    await self.query_one(ProgressBar).remove()
+                    return
+                self.id_lst = self.lresp[0][1]
+            else:
+                self.lresp = load_rows_sq(search_query, pgt=pgt, l_interval=l_interval)
+                if self.lresp is None:
+                    await self.query_one(ProgressBar).remove()
+                    return
             resp_rows = self.lresp[0][0]
             resp_id_lst = self.lresp[0][1]
             if pgt != "start":
@@ -161,6 +204,19 @@ class T_Mail_App(App):
         self.query_one(ProgressBar).update(total=50)
         self.set_timer(0.5, self.load_rows)
 
+    def action_initiate_search_populate(self, search_query, no_of_results) -> None:
+        """
+        Reload all emails
+        :return: None
+        :rtype: None
+        """
+        dt = self.query_one(DataTable)
+        dt.clear()
+        self.mount(ProgressBar(), before=dt)
+        self.query_one(ProgressBar).update(total=no_of_results)
+        loader = lambda: self.load_rows_sq(search_query, r_max=no_of_results)
+        self.set_timer(0.5, loader)
+
     def action_request_quit(self) -> None:
         """
         Confirm if user wants to quit
@@ -180,7 +236,7 @@ class T_Mail_App(App):
         body = msg.getBody()
         self.push_screen(
             View_Body(self.id_lst[self.cur_row], self.rows[self.cur_row][0], self.rows[self.cur_row][1],
-                      body,msg))
+                      body, msg))
 
     def action_toggle_read_unread(self) -> None:
         """
@@ -348,6 +404,24 @@ class T_Mail_App(App):
                 lb = self.query_one("#footer_label", Label)
                 lb.update(renderable=f"[red]Selected  ({self.batch_action_count}) emails [/red]")
                 dt.update_cell_at(Coordinate(self.cur_row, 0), f"[red]{sbj}[/red]")
+
+    def action_initiate_search(self) -> None:
+        """
+        Display Search Query Selector Popup
+        :return: None
+        :rtype: None
+        """
+
+        def handle_search_screen(search_query_info: tuple) -> None:
+            """
+            Begin Search Process as soon as search query is received
+            :param search_query_info: The parameter containing information about the search query
+            :return: None
+            :rtype: None
+            """
+            self.action_initiate_search_populate(*search_query_info)
+
+        self.app.push_screen(Search_Query_Selector(), handle_search_screen)
 
 
 app = T_Mail_App()

@@ -9,6 +9,9 @@ A powerful command line-based email client designed for efficient email manageme
 - **Delete Emails**: Remove unwanted emails individually or in batch.
 - **Batch Operations**: Execute actions like marking as read/unread, reporting spam, or deleting multiple emails at once.
 - **Email Summarization**: Leverage Gemini 1.5 Flash to generate concise summaries of email texts for quick understanding.
+- **Download All attachments**: Download all the attachments present in an email.
+- **Search for emails**: Search for emails by date,read/unread status,attachments and many more options.
+
 ## Installation
 1. Clone the repository :
 ```

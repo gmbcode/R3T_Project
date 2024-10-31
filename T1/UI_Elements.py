@@ -1,18 +1,21 @@
+import asyncio
 import logging
 from datetime import datetime
 from rich.markdown import Markdown
-from textual.app import App, ComposeResult,SystemCommand
+from textual.app import App, ComposeResult, SystemCommand
 from textual.containers import Grid, ScrollableContainer, Center, Middle, Horizontal
-from textual.widgets import Header, Footer, DataTable, Label, Button, Static, ProgressBar, Markdown
+from textual.widgets import Header, Footer, DataTable, Label, Button, Static, ProgressBar, Markdown, Input
 from textual.binding import Binding
+from textual.validation import Length, Integer
 from textual.color import Gradient
-from textual.screen import ModalScreen,Screen
+from textual.screen import ModalScreen, Screen
 from textual.coordinate import Coordinate
 from rich.text import Text
 import Message
 import GmailFetcher
 import google.generativeai as genai
 from dotenv import dotenv_values
+
 config = dotenv_values(".env")
 api_key = config['GEMINI_API_KEY']
 genai.configure(api_key=api_key)
@@ -78,8 +81,49 @@ def load_rows(pgt="", l_interval=5) -> tuple:
         else:
             logger.info(f"Message {id_1} is read ")
 
-        rows.append((text_sanitizer(G_msg.getFrom()), G_msg.getHeading() + post_add,G_msg.getDate()))
+        rows.append((text_sanitizer(G_msg.getFrom()), G_msg.getHeading() + post_add, G_msg.getDate()))
     return (rows, id_lst), pgt
+
+
+def load_rows_sq(search_query, pgt="", l_interval=5) -> tuple | None:
+    """
+    Return a tuple of row data to be loaded into the UI
+    :param search_query: The query to be searched
+    :param pgt: Next page token to load new rows
+    :rtype : tuple
+    :return : A tuple containing row data to be loaded into the UI
+    """
+    rows = []
+    id_lst = []
+    if len(pgt) > 1:
+        msg_lst = srv.service.users().messages().list(userId='me', maxResults=l_interval,
+                                                      pageToken=pgt, q=search_query).execute()
+        if 'nextPageToken' in msg_lst:
+            pgt = msg_lst['nextPageToken']
+        else:
+            pgt = ""
+    else:
+        msg_lst = srv.service.users().messages().list(userId='me', maxResults=l_interval, q=search_query).execute()
+        if 'nextPageToken' in msg_lst:
+            pgt = msg_lst['nextPageToken']
+        else:
+            pgt = ""
+    if 'messages' in msg_lst:
+        for msg in msg_lst['messages']:
+            id_1 = msg['id']
+            id_lst.append(id_1)
+            G_msg = Message.Gmail_Message(id_1, srv)
+            post_add = ""
+            if G_msg.unread:
+                logger.info(f"Message {id_1} is unread ")
+                post_add += " (U)"
+            else:
+                logger.info(f"Message {id_1} is read ")
+
+            rows.append((text_sanitizer(G_msg.getFrom()), G_msg.getHeading() + post_add, G_msg.getDate()))
+        return (rows, id_lst), pgt
+    else:
+        return None
 
 
 class Quit_Check(ModalScreen):
@@ -107,6 +151,8 @@ class Too_Many_Selections(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.app.pop_screen()
+
+
 class No_Attachments_Exist(ModalScreen):
     def compose(self) -> ComposeResult:
         with Center():
@@ -117,16 +163,20 @@ class No_Attachments_Exist(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.app.pop_screen()
+
+
 class Successfully_Downloaded_Attachments(ModalScreen):
     def compose(self) -> ComposeResult:
         with Center():
             with Middle():
                 yield Label("Successfully downloaded attachments",
                             id="main_dialog_text")
-                yield Horizontal(Button("Ok",id="close_dialog"))
+                yield Horizontal(Button("Ok", id="close_dialog"))
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.app.pop_screen()
+
+
 class View_Body_Summary(ModalScreen):
     """View Body Summary Screen"""
     BINDINGS = [
@@ -171,9 +221,9 @@ class View_Body(ModalScreen):
     BINDINGS = [
         Binding("c", "close_view", "Close", show=True, priority=True),
         Binding("s", "summarize_text", "Summarize text", show=True),
-        Binding("a","download_attachments","Download attachments",show=True)]
+        Binding("a", "download_attachments", "Download attachments", show=True)]
 
-    def __init__(self, id, frm, hdg, body,msgobj :Message.Gmail_Message):
+    def __init__(self, id, frm, hdg, body, msgobj: Message.Gmail_Message):
         self.m_id = id
         self.frm = frm
         self.hdg = hdg
@@ -215,6 +265,7 @@ class View_Body(ModalScreen):
         :rtype: None
         """
         self.app.pop_screen()
+
     def action_download_attachments(self) -> None:
         """
         Download the attachments if they exist
@@ -228,8 +279,26 @@ class View_Body(ModalScreen):
         else:
             self.app.push_screen(No_Attachments_Exist())
             logger.info("No attachments found")
+
+
 class Search_Query_Selector(ModalScreen):
     def __init__(self):
         super().__init__()
+
     def compose(self) -> ComposeResult:
-        pass
+        yield Input(placeholder="Search Query eg (Test Email has:attachment before:yyyy/mm/dd ) ",
+                    validators=Length(minimum=1, maximum=150), id="search_query_input")
+        yield Input(placeholder="No of results (from 10 to 50)", validators=Integer(minimum=10, maximum=50),
+                    type="number", id="no_input", value="10")
+        yield Horizontal(Button("Search", variant="primary", id="search_button"),
+                         Button("Cancel", variant="error", id="cancel_button"))
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "cancel_button":
+            logger.info("Cancel button pressed")
+            self.app.pop_screen()
+        else:
+            inp = self.query_one('#search_query_input', Input)
+            inp1 = self.query_one('#no_input', Input)
+            if inp.is_valid and inp1.is_valid:
+                self.dismiss((inp.value, int(inp1.value)))
