@@ -200,7 +200,21 @@ class T_Mail_App(App):
         """
         dt = self.query_one(DataTable)
         dt.clear()
-        self.mount(ProgressBar(), before=dt)
+        gradient = Gradient.from_colors(
+            "#881177",
+            "#aa3355",
+            "#cc6666",
+            "#ee9944",
+            "#eedd00",
+            "#99dd55",
+            "#44dd88",
+            "#22ccbb",
+            "#00bbcc",
+            "#0099cc",
+            "#3366bb",
+            "#663399",
+        )
+        self.mount(ProgressBar(gradient=gradient), before=dt)
         self.query_one(ProgressBar).update(total=50)
         self.set_timer(0.5, self.load_rows)
 
@@ -212,7 +226,21 @@ class T_Mail_App(App):
         """
         dt = self.query_one(DataTable)
         dt.clear()
-        self.mount(ProgressBar(), before=dt)
+        gradient = Gradient.from_colors(
+            "#881177",
+            "#aa3355",
+            "#cc6666",
+            "#ee9944",
+            "#eedd00",
+            "#99dd55",
+            "#44dd88",
+            "#22ccbb",
+            "#00bbcc",
+            "#0099cc",
+            "#3366bb",
+            "#663399",
+        )
+        self.mount(ProgressBar(gradient=gradient,name="Searching..."), before=dt)
         self.query_one(ProgressBar).update(total=no_of_results)
         loader = lambda: self.load_rows_sq(search_query, r_max=no_of_results)
         self.set_timer(0.5, loader)
