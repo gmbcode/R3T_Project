@@ -12,6 +12,7 @@ from textual.screen import ModalScreen, Screen
 from textual.coordinate import Coordinate
 from rich.text import Text
 import Message
+from Message import logger
 import GmailFetcher
 import google.generativeai as genai
 from dotenv import dotenv_values
