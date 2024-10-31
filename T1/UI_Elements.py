@@ -20,9 +20,6 @@ config = dotenv_values(".env")
 api_key = config['GEMINI_API_KEY']
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-1.5-flash")
-logger = logging.getLogger(__name__)
-logging.basicConfig(filename='t1app.log', encoding='utf-8', level=logging.DEBUG)
-logger.info(" App started at " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
 srv = GmailFetcher.GmailService()
 
 
