@@ -98,7 +98,7 @@ class T_Mail_App(App):
         :return: None
         :rtype: None
         """
-        self.title = "TMail v0.1.0"
+        self.title = "TMail v0.1.2"
         self.table = self.query_one(DataTable)
         self.query_one(ProgressBar).update(total=50)
         lb = self.query_one("#footer_label", Label)

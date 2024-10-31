@@ -1,5 +1,5 @@
 
-# TMail v0.1.0
+# TMail v0.1.2
 A powerful command line-based email client designed for efficient email management directly from your terminal. This client enables users to view emails, mark them as read or unread, report spam, delete emails, and perform batch operations. Additionally, it offers an email summarization feature using Gemini 1.5 Flash for quick insights into your inbox.
 
 ## Features
