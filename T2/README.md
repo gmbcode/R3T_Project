@@ -4,10 +4,10 @@
 - It implements a custom Trie data structure and employs a Breadth-First Search (BFS) algorithm to efficiently find potentially matching words during gameplay.
 
 ## Features
-- > **Automatic Word Guessing** : Utilizes the hints available to guess the word.
-- > **Custom Trie Data Structure** : Employs BFS on a custom Trie data structure to efficiently find potentially matching words.
-- > **Identifies Game State** : Identifies the current phase of the game
-- > **Custom Initial Settings** : Can run on a custom wordlist and join private lobbies based on configuration loaded from a `config.json` file or from command line arguments.
+- **Automatic Word Guessing** : Utilizes the hints available to guess the word.
+- **Custom Trie Data Structure** : Employs BFS on a custom Trie data structure to efficiently find potentially matching words.
+- **Identifies Game State** : Identifies the current phase of the game
+- **Custom Initial Settings** : Can run on a custom wordlist and join private lobbies based on configuration loaded from a `config.json` file or from command line arguments.
 
 ## Installation
 1. Clone the repository :

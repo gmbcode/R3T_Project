@@ -1,7 +1,7 @@
 """Main TMail App File"""
 # Todo : Make a LabelSelector Modal Screen (that should display current labels and labels to add / remove )
 # Todo : Make a create Label Modal Screen
-
+# Todo : Add error handling
 import os
 from typing import Iterable
 from textual.containers import HorizontalScroll

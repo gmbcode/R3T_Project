@@ -1,3 +1,5 @@
+"""Skribbler main file"""
+# TODO : Add error handling and support for drawing
 import time
 from sys import exit
 from selenium import webdriver
