@@ -34,6 +34,9 @@ GEMINI_API_KEY=YOUR_GEMINI_API_KEY
  Run `main.py` without arguments and sign in to your email.
  > [!NOTE]
 >Make sure your email is added as one of the test emails in your OAuth Consent screen before logging into the app
+ 
+> [!NOTE]
+ > It is recommended to run the app on a Terminal that supports displaying rich text eg : Windows Terminal
 ### Screenshots
 Main UI
 [![ui-photo.png](https://i.postimg.cc/kMFd5476/ui-photo.png)](https://postimg.cc/RqFYsv64)
