@@ -16,7 +16,7 @@ A powerful command line-based email client designed for efficient email manageme
 1. Clone the repository :
 ```
 git clone https://github.com/gmbcode/R3T_Project.git
-cd T1
+cd R3T_Project\T1
 ```
 2. Install the dependencies (preferably in a virtual environment)
 `pip install -r requirements.txt`
@@ -34,5 +34,11 @@ GEMINI_API_KEY=YOUR_GEMINI_API_KEY
  Run `main.py` without arguments and sign in to your email.
  > [!NOTE]
 >Make sure your email is added as one of the test emails in your OAuth Consent screen before logging into the app
+### Screenshots
+Main UI
+[![ui-photo.png](https://i.postimg.cc/kMFd5476/ui-photo.png)](https://postimg.cc/RqFYsv64)
+Commands Palette
+[![command-pallete-scr.png](https://i.postimg.cc/15BPvzTh/command-pallete-scr.png)](https://postimg.cc/ykDwd7sv)
 ## License
 [GNU LGPLv3](https://choosealicense.com/licenses/lgpl-3.0/)
+    
