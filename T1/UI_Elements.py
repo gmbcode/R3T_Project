@@ -72,7 +72,7 @@ def load_rows(pgt="", l_interval=5) -> tuple:
         id_1 = msg['id']
         id_lst.append(id_1)
         G_msg = Message.Gmail_Message(id_1, srv)
-        post_add = ""
+        post_add = " "
         if G_msg.unread:
             logger.info(f"Message {id_1} is unread ")
             post_add += " (U)"

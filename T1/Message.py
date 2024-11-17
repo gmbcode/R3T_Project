@@ -106,6 +106,7 @@ class Gmail_Message:
         for field in headers:
             if field['name'] == 'Subject':
                 return field['value']
+        return 'No Subject'
 
     def getFrom(self) -> str:
         """
