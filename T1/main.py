@@ -415,6 +415,7 @@ class T_Mail_App(App):
         """
         dt = self.query_one(DataTable)
         sbj = dt.get_cell_at(Coordinate(self.cur_row, 0))
+        logger.info(sbj)
         if sbj[:5] == '[red]' and sbj[-6:] == '[/red]':
             self.batch_action_count -= 1
             if self.batch_action_count > 0:
@@ -423,7 +424,9 @@ class T_Mail_App(App):
             else:
                 lb = self.query_one("#footer_label", Label)
                 lb.update(renderable="")
-            dt.update_cell_at(Coordinate(self.cur_row, 0), sbj[5:-7])
+            logger.info("Changed the subject of the email : ")
+            logger.info(sbj)
+            dt.update_cell_at(Coordinate(self.cur_row, 0), sbj[5:-6])
         else:
             if self.batch_action_count > 100:
                 self.app.push_screen(Too_Many_Selections())

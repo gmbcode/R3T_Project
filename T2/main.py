@@ -124,7 +124,15 @@ while True:
                         continue
                     input_element.send_keys(elem)
                     input_element.send_keys(Keys.ENTER)
-                    time.sleep(1.5)
+                    time.sleep(1)
+                    guess_result = driver.find_element(By.CLASS_NAME, 'guessed')
+                    guess_text = guess_result.find_elements(By.TAG_NAME, 'b')
+                    to_break = False
+                    for elem in guess_text:
+                        if elem.text == f'{player_name} guessed the word!':
+                            to_break = True
+                    if to_break:
+                        break
     if get_game_state() == game_states['Draw Phase']:
         hints = driver.find_elements(By.CLASS_NAME, 'hint')
         word = ''.join(hint.text for hint in hints)
